@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>My DSA Blog</title>
+</head>
+
+<body>
+    <header>
+        <h1>My DSA Blog</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#Home">Home</a></li>
+            <li><a href="#Articles">Articles</a></li>
+            <li><a href="#Contact">Contact</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section>
+            <article>
+                <h2>The Big O Notaion</h2>
+                <p>Big O Notation is the language we use to describe the complexity of an algorithm. In other words,
+                    Big O Notation is the language we use for talking about how long an algorithm takes to run. It is
+                    how we compare the efficiency of different approaches to a problem. With Big O Notation we express
+                    the runtime in terms of — how quickly it grows relative to the input, as the input gets larger.</p>
+                <img src="https://miro.medium.com/1*ENAP16Z-YXbzEebQllXFYA.jpeg"
+                    alt="A graph representing how data grows based on the Big O Notation."
+                    style="width: 400px; height: 400px">
+            </article>
+        </section>
+        <form method="post" action="#"  id="Contact">
+            <div>
+                <label for="name">Name</label>
+                <input id="name" type="text" name="name">
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email">
+            </div>
+            <div>
+                <label for="topic">Topic</label>
+                <select id="topic" name="topic">
+                    <option value="array">Arrays</option>
+                    <option value="graph">Graphs</option>
+                    <option value="dp">Dynamic Programming</option>
+                </select>
+            </div>
+            <div>
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="4"></textarea>
+            </div>
+            <div>
+                <input type="checkbox" id="subscribe" name="subscribe" value="yes">
+                <label for="subscribe">Subscribe to updates</label>
+            </div>
+            <button  type="submit">Send</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2026 My DSA Blog</p>
+    </footer>
+</body>
+
+</html>
