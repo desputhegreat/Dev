@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOCOL // Discipline & Execution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        zinc: {
+                            850: '#1f1f22',
+                            925: '#121214',
+                            950: '#09090b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #09090b;
+            color: #f4f4f5;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom subtle scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .tab-active {
+            background-color: #f4f4f5;
+            color: #09090b;
+            font-weight: 600;
+        }
+        .checkbox-custom {
+            appearance: none;
+            width: 1.15rem;
+            height: 1.15rem;
+            border: 1.5px solid #52525b;
+            border-radius: 0.25rem;
+            background-color: transparent;
+            display: inline-grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .checkbox-custom:checked {
+            background-color: #f4f4f5;
+            border-color: #f4f4f5;
+        }
+        .checkbox-custom:checked::before {
+            content: "";
+            width: 0.65rem;
+            height: 0.65rem;
+            transform: scale(1);
+            background-color: #09090b;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-zinc-200 selection:text-zinc-900">
+
+    <!-- Top Container -->
+    <div class="max-w-5xl w-full mx-auto px-4 sm:px-6 pt-6 pb-16 flex-1 flex flex-col">
+        
+        <!-- Header & Respect Quote Banner -->
+        <header class="mb-8 border-b border-zinc-800 pb-6">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-zinc-100 animate-pulse"></span>
+                    <span class="font-mono text-xs uppercase tracking-widest text-zinc-400">System Active // Daily Protocol</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="current-date-display" class="font-mono text-xs text-zinc-500"></span>
+                    <button onclick="cycleQuote()" title="Next quote" class="text-xs font-mono text-zinc-400 hover:text-zinc-100 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2.5 py-1 rounded transition">
+                        [Cycle Mantra]
+                    </button>
+                </div>
+            </div>
+            
+            <blockquote class="relative">
+                <p id="quote-text" class="text-lg sm:text-xl md:text-2xl font-medium tracking-tight text-zinc-100 leading-snug">
+                    "Men do not respect intentions. They respect the undeniable proof of relentless, daily execution."
+                </p>
+                <footer id="quote-sub" class="mt-1.5 font-mono text-xs text-zinc-500 uppercase tracking-wider">
+                    — Command Respect Through Mastery
+                </footer>
+            </blockquote>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap gap-1.5 sm:gap-2 mb-8 bg-zinc-925 p-1.5 rounded-lg border border-zinc-800/80">
+            <button onclick="switchTab('tasks')" id="tab-btn-tasks" class="tab-btn tab-active flex-1 min-w-[110px] py-2 px-3 rounded-md text-xs sm:text-sm font-mono uppercase tracking-wider transition text-center">
+                01. Tasks
+            </button>
+            <button onclick="switchTab('diet')" id="tab-btn-diet" class="tab-btn text-zinc-400 hover:text-zinc-200 flex-1 min-w-[110px] py-2 px-3 rounded-md text-xs sm:text-sm font-mono uppercase tracking-wider transition text-center">
+                02. Fuel (Diet)
+            </button>
+            <button onclick="switchTab('exercise')" id="tab-btn-exercise" class="tab-btn text-zinc-400 hover:text-zinc-200 flex-1 min-w-[110px] py-2 px-3 rounded-md text-xs sm:text-sm font-mono uppercase tracking-wider transition text-center">
+                03. Overload
+            </button>
+            <button onclick="switchTab('countdown')" id="tab-btn-countdown" class="tab-btn text-zinc-400 hover:text-zinc-200 flex-1 min-w-[110px] py-2 px-3 rounded-md text-xs sm:text-sm font-mono uppercase tracking-wider transition text-center">
+                04. Hours Left
+            </button>
+            <button onclick="switchTab('timer')" id="tab-btn-timer" class="tab-btn text-zinc-400 hover:text-zinc-200 flex-1 min-w-[110px] py-2 px-3 rounded-md text-xs sm:text-sm font-mono uppercase tracking-wider transition text-center">
+                05. Timer
+            </button>
+        </nav>
+
+        <!-- MODULE 1: TASKS (DAILY REPEATS & GENERAL TO-DOS) -->
+        <section id="module-tasks" class="module-section space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Daily Non-Negotiables (Repeated Every Single Day) -->
+                <div class="bg-zinc-925 border border-zinc-800/90 rounded-xl p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+                            <div>
+                                <h2 class="text-base font-semibold text-zinc-100 tracking-tight">Daily Non-Negotiables</h2>
+                                <p class="text-xs text-zinc-500">Auto-resets every new calendar day</p>
+                            </div>
+                            <span id="daily-progress-badge" class="font-mono text-xs px-2.5 py-1 rounded bg-zinc-800 text-zinc-300">0/0</span>
+                        </div>
+
+                        <!-- Add Daily Task Input -->
+                        <form onsubmit="addDailyTask(event)" class="flex gap-2 mb-4">
+                            <input type="text" id="daily-task-input" placeholder="Append daily repeating task..." required
+                                class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-500">
+                            <button type="submit" class="bg-zinc-100 hover:bg-white text-zinc-950 font-medium px-4 py-2 rounded-lg text-sm transition shrink-0">
+                                Add
+                            </button>
+                        </form>
+
+                        <!-- Daily Task List -->
+                        <ul id="daily-task-list" class="space-y-2 max-h-[380px] overflow-y-auto pr-1"></ul>
+                    </div>
+
+                    <div class="mt-6 pt-3 border-t border-zinc-800/60 flex justify-between items-center text-xs text-zinc-500 font-mono">
+                        <span>STATUS: REPEATS DAILY</span>
+                        <button onclick="resetDailyTasksManual()" class="hover:text-zinc-300 underline">Force Uncheck All</button>
+                    </div>
+                </div>
+
+                <!-- General One-Off Tasks -->
+                <div class="bg-zinc-925 border border-zinc-800/90 rounded-xl p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+                            <div>
+                                <h2 class="text-base font-semibold text-zinc-100 tracking-tight">General Objectives</h2>
+                                <p class="text-xs text-zinc-500">One-off tasks & immediate targets</p>
+                            </div>
+                            <span id="general-progress-badge" class="font-mono text-xs px-2.5 py-1 rounded bg-zinc-800 text-zinc-300">0/0</span>
+                        </div>
+
+                        <!-- Add General Task Input -->
+                        <form onsubmit="addGeneralTask(event)" class="flex gap-2 mb-4">
+                            <input type="text" id="general-task-input" placeholder="Append general task..." required
+                                class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-500">
+                            <button type="submit" class="bg-zinc-100 hover:bg-white text-zinc-950 font-medium px-4 py-2 rounded-lg text-sm transition shrink-0">
+                                Add
+                            </button>
+                        </form>
+
+                        <!-- General Task List -->
+                        <ul id="general-task-list" class="space-y-2 max-h-[380px] overflow-y-auto pr-1"></ul>
+                    </div>
+
+                    <div class="mt-6 pt-3 border-t border-zinc-800/60 flex justify-between items-center text-xs text-zinc-500 font-mono">
+                        <span>ONE-TIME EXECUTION</span>
+                        <button onclick="clearCompletedGeneral()" class="hover:text-zinc-300 underline">Purge Completed</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- MODULE 2: CALORIE & WATER TRACKER (WITH DIET.TXT PARSER) -->
+        <section id="module-diet" class="module-section hidden space-y-6">
+            <!-- Top Bars: 3000 Kcal & 4.0L Water -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Calorie Counter Card -->
+                <div class="bg-zinc-925 border border-zinc-800 rounded-xl p-5">
+                    <div class="flex justify-between items-baseline mb-2">
+                        <div>
+                            <span class="font-mono text-xs uppercase text-zinc-400">Daily Energy Target</span>
+                            <h3 class="text-2xl font-bold font-mono text-zinc-100 mt-0.5">
+                                <span id="cal-current">0</span> <span class="text-sm font-normal text-zinc-500">/ 3000 kcal</span>
+                            </h3>
+                        </div>
+                        <span id="cal-percent" class="font-mono text-sm text-zinc-300">0%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800 mb-4">
+                        <div id="cal-bar" class="h-full bg-zinc-100 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="quickAddIntake('Quick +100 kcal', 100, 0)" class="text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded text-zinc-300 transition">+100 kcal</button>
+                        <button onclick="quickAddIntake('Quick +250 kcal', 250, 0)" class="text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded text-zinc-300 transition">+250 kcal</button>
+                        <button onclick="quickAddIntake('Quick +500 kcal', 500, 0)" class="text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded text-zinc-300 transition">+500 kcal</button>
+                    </div>
+                </div>
+
+                <!-- Water Counter Card -->
+                <div class="bg-zinc-925 border border-zinc-800 rounded-xl p-5">
+                    <div class="flex justify-between items-baseline mb-2">
+                        <div>
+                            <span class="font-mono text-xs uppercase text-zinc-400">Daily Hydration Target</span>
+                            <h3 class="text-2xl font-bold font-mono text-zinc-100 mt-0.5">
+                                <span id="water-current">0.00</span> <span class="text-sm font-normal text-zinc-500">/ 4.00 L (4000 ml)</span>
+                            </h3>
+                        </div>
+                        <span id="water-percent" class="font-mono text-sm text-zinc-300">0%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800 mb-4">
+                        <div id="water-bar" class="h-full bg-zinc-300 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="quickAddIntake('Water (250ml)', 0, 250)" class="text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded text-zinc-300 transition">+250 ml</button>
+                        <button onclick="quickAddIntake('Water (500ml)', 0, 500)" class="text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded text-zinc-300 transition">+500 ml</button>
+                        <button onclick="quickAddIntake('Water (1.0L)', 0, 1000)" class="text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded text-zinc-300 transition">+1.0 L</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diet.txt Arsenal & Intake Log -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left 7 Cols: Diet.txt Items & Upload/Paste -->
+                <div class="lg:col-span-7 bg-zinc-925 border border-zinc-800 rounded-xl p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3 mb-4">
+                            <div>
+                                <h3 class="text-base font-semibold text-zinc-100">diet.txt Arsenal</h3>
+                                <p class="text-xs text-zinc-500">Click any item from your diet list to turn up the counters</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label class="cursor-pointer text-xs font-mono bg-zinc-100 text-zinc-950 hover:bg-white font-medium px-3 py-1.5 rounded transition">
+                                    Upload diet.txt
+                                    <input type="file" id="diet-file-input" accept=".txt" class="hidden" onchange="handleDietFileUpload(event)">
+                                </label>
+                                <button onclick="toggleDietPasteModal()" class="text-xs font-mono bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 px-3 py-1.5 rounded transition">
+                                    Edit / Paste diet.txt
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Paste/Edit Box for diet.txt -->
+                        <div id="diet-paste-box" class="hidden mb-5 bg-zinc-950 border border-zinc-800 rounded-lg p-3.5">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-mono text-xs text-zinc-400">Format per line: <code class="text-zinc-200">Item Name, Calories, Water(ml)</code></span>
+                                <button onclick="toggleDietPasteModal()" class="text-xs text-zinc-500 hover:text-zinc-300">Close</button>
+                            </div>
+                            <textarea id="diet-raw-textarea" rows="6"
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded p-2.5 font-mono text-xs text-zinc-200 focus:outline-none focus:border-zinc-500 mb-2"
+                                placeholder="Oats & Milk, 450, 300&#10;Peanut Butter Toast, 380, 0&#10;Whey & Water, 130, 400"></textarea>
+                            <div class="flex justify-end gap-2">
+                                <button onclick="saveRawDietText()" class="text-xs font-mono bg-zinc-100 text-zinc-950 font-medium px-3.5 py-1.5 rounded hover:bg-white transition">
+                                    Parse & Save diet.txt
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quick-Add Diet Preset Buttons Grid -->
+                        <div id="diet-presets-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[320px] overflow-y-auto pr-1 mb-5"></div>
+                    </div>
+
+                    <!-- Manual Custom Item Addition -->
+                    <form onsubmit="addCustomDietItem(event)" class="pt-4 border-t border-zinc-800">
+                        <p class="text-xs font-mono uppercase text-zinc-500 mb-2">Add Item to diet.txt List or Log Directly</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                            <input type="text" id="custom-food-name" placeholder="Item name (e.g. Banana Shake)" required
+                                class="sm:col-span-5 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-500">
+                            <input type="number" id="custom-food-cal" placeholder="kcal (e.g. 400)" min="0"
+                                class="sm:col-span-3 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-500">
+                            <input type="number" id="custom-food-water" placeholder="ml (e.g. 300)" min="0"
+                                class="sm:col-span-2 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-500">
+                            <button type="submit" class="sm:col-span-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-mono py-2 px-2 rounded-lg transition">
+                                + Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right 5 Cols: Today's Intake History Log -->
+                <div class="lg:col-span-5 bg-zinc-925 border border-zinc-800 rounded-xl p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+                            <div>
+                                <h3 class="text-base font-semibold text-zinc-100">Today's Intake Log</h3>
+                                <p class="text-xs text-zinc-500">Every item added today</p>
+                            </div>
+                            <button onclick="resetDailyIntake()" class="text-xs font-mono text-zinc-400 hover:text-red-400 border border-zinc-800 px-2.5 py-1 rounded transition">
+                                Reset Day
+                            </button>
+                        </div>
+                        <ul id="diet-log-list" class="space-y-2 max-h-[340px] overflow-y-auto pr-1"></ul>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-zinc-800/60 text-xs font-mono text-zinc-500 flex justify-between">
+                        <span>GOAL: 3000 KCAL // 4000 ML</span>
+                        <span id="remaining-macros-label"></span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- MODULE 3: EXERCISE TRACKER (3 SETS OF X REPS, +2 EVERY SUNDAY) -->
+        <section id="module-exercise" class="module-section hidden space-y-6">
+            <div class="bg-zinc-925 border border-zinc-800 rounded-xl p-5 sm:p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-5 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-xs uppercase px-2 py-0.5 rounded bg-zinc-100 text-zinc-950 font-semibold">Progressive Overload</span>
+                            <span class="font-mono text-xs text-zinc-400">Auto +2 Reps Every Sunday</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-zinc-100 mt-1.5">Weighted Calisthenics Protocol</h2>
+                        <p class="text-xs text-zinc-400 mt-0.5">
+                            Protocol Start Date: <span id="exercise-start-date-display" class="font-mono text-zinc-300"></span> 
+                            • Sundays Elapsed: <span id="sundays-elapsed-count" class="font-mono text-zinc-100 font-semibold">0</span>
+                            (<span id="total-rep-bonus" class="font-mono text-zinc-300">+0</span> reps bonus)
+                        </p>
+                    </div>
+
+                    <!-- Calibration / Manual Sunday Offset Control -->
+                    <div class="flex flex-wrap items-center gap-2 bg-zinc-950 border border-zinc-800 p-2.5 rounded-lg">
+                        <span class="font-mono text-xs text-zinc-400 mr-1">Sunday Cycle Offset:</span>
+                        <button onclick="adjustSundayOffset(-1)" class="w-7 h-7 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 font-mono text-sm text-zinc-200 flex items-center justify-center transition" title="Subtract 1 Sunday (-2 reps)">-</button>
+                        <span id="sunday-offset-display" class="font-mono text-xs px-2 text-zinc-200">0</span>
+                        <button onclick="adjustSundayOffset(1)" class="w-7 h-7 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 font-mono text-sm text-zinc-200 flex items-center justify-center transition" title="Simulate +1 Sunday (+2 reps)">+</button>
+                        <button onclick="resetExerciseSetsToday()" class="ml-2 text-xs font-mono text-zinc-400 hover:text-zinc-200 underline">Reset Sets</button>
+                    </div>
+                </div>
+
+                <!-- 3 Core Exercises Grid -->
+                <div id="exercise-cards-container" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Populated via JS -->
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-zinc-800/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs font-mono text-zinc-500">
+                    <span>RULE: 3 SETS × X REPS // SUNDAY AUTOMATICALLY INCREMENTS X BY +2</span>
+                    <button onclick="resetStartDateToToday()" class="hover:text-zinc-300 underline">Reset Protocol Start Date to Today</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 4: HOURS COUNTDOWN CALCULATOR -->
+        <section id="module-countdown" class="module-section hidden space-y-6">
+            <div class="bg-zinc-925 border border-zinc-800 rounded-xl p-6">
+                <div class="max-w-2xl mx-auto">
+                    <div class="border-b border-zinc-800 pb-4 mb-6">
+                        <h2 class="text-lg font-semibold text-zinc-100">Hours Remaining Calculator</h2>
+                        <p class="text-xs text-zinc-500">Calculate exact hours left until your deadline or target date</p>
+                    </div>
+
+                    <form onsubmit="saveTargetCountdown(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3 mb-8">
+                        <input type="text" id="countdown-title-input" placeholder="Objective / Deadline Label (optional)"
+                            class="sm:col-span-5 bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-500">
+                        <input type="datetime-local" id="countdown-date-input" required
+                            class="sm:col-span-5 bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 font-mono focus:outline-none focus:border-zinc-500 [color-scheme:dark]">
+                        <button type="submit" class="sm:col-span-2 bg-zinc-100 hover:bg-white text-zinc-950 font-medium py-2.5 px-4 rounded-lg text-sm transition">
+                            Calculate
+                        </button>
+                    </form>
+
+                    <!-- Big Live Hours Output -->
+                    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6 sm:p-8 text-center">
+                        <span id="countdown-label-display" class="font-mono text-xs uppercase tracking-widest text-zinc-400">TARGET DEADLINE</span>
+                        
+                        <div class="my-5">
+                            <div class="text-4xl sm:text-6xl font-bold font-mono tracking-tight text-zinc-100" id="total-hours-remaining">
+                                0.00
+                            </div>
+                            <div class="text-xs font-mono uppercase tracking-widest text-zinc-500 mt-2">
+                                Total Hours Remaining
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto pt-5 border-t border-zinc-900">
+                            <div class="bg-zinc-925 p-3 rounded-lg border border-zinc-800/60">
+                                <div id="cd-days" class="font-mono text-lg sm:text-xl font-semibold text-zinc-200">0</div>
+                                <div class="font-mono text-[10px] uppercase text-zinc-500">Days</div>
+                            </div>
+                            <div class="bg-zinc-925 p-3 rounded-lg border border-zinc-800/60">
+                                <div id="cd-hours" class="font-mono text-lg sm:text-xl font-semibold text-zinc-200">0</div>
+                                <div class="font-mono text-[10px] uppercase text-zinc-500">Hours</div>
+                            </div>
+                            <div class="bg-zinc-925 p-3 rounded-lg border border-zinc-800/60">
+                                <div id="cd-minutes" class="font-mono text-lg sm:text-xl font-semibold text-zinc-200">0</div>
+                                <div class="font-mono text-[10px] uppercase text-zinc-500">Minutes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 5: PURE TIMER SECTION -->
+        <section id="module-timer" class="module-section hidden">
+            <div class="bg-zinc-925 border border-zinc-800 rounded-xl p-8 sm:p-12 flex flex-col items-center justify-center min-h-[400px]">
+                
+                <!-- Timer Display -->
+                <div id="pure-timer-display" class="font-mono text-6xl sm:text-8xl font-bold tracking-tighter text-zinc-100 mb-8 select-none">
+                    00:00:00
+                </div>
+
+                <!-- Timer Input Fields (Shown when not actively running) -->
+                <div id="timer-inputs-row" class="flex items-center gap-3 mb-8">
+                    <div class="flex flex-col items-center">
+                        <input type="number" id="timer-in-hr" min="0" max="99" placeholder="00" value="0"
+                            class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 text-center font-mono text-lg text-zinc-100 focus:outline-none focus:border-zinc-500">
+                        <span class="font-mono text-[10px] uppercase text-zinc-500 mt-1">Hours</span>
+                    </div>
+                    <span class="font-mono text-xl text-zinc-600 -mt-4">:</span>
+                    <div class="flex flex-col items-center">
+                        <input type="number" id="timer-in-min" min="0" max="59" placeholder="25" value="25"
+                            class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 text-center font-mono text-lg text-zinc-100 focus:outline-none focus:border-zinc-500">
+                        <span class="font-mono text-[10px] uppercase text-zinc-500 mt-1">Minutes</span>
+                    </div>
+                    <span class="font-mono text-xl text-zinc-600 -mt-4">:</span>
+                    <div class="flex flex-col items-center">
+                        <input type="number" id="timer-in-sec" min="0" max="59" placeholder="00" value="0"
+                            class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 text-center font-mono text-lg text-zinc-100 focus:outline-none focus:border-zinc-500">
+                        <span class="font-mono text-[10px] uppercase text-zinc-500 mt-1">Seconds</span>
+                    </div>
+                </div>
+
+                <!-- Pure Timer Controls -->
+                <div class="flex items-center gap-3">
+                    <button id="timer-start-btn" onclick="startOrPausePureTimer()" class="bg-zinc-100 hover:bg-white text-zinc-950 font-mono text-sm font-semibold px-8 py-3 rounded-lg transition">
+                        START
+                    </button>
+                    <button onclick="resetPureTimer()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-mono text-sm px-6 py-3 rounded-lg transition">
+                        RESET
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        /* =========================================================================
+           1. RESPECT-TAILORED QUOTES
+           ========================================================================= */
+        const RESPECT_QUOTES = [
+            {
+                text: '"Men do not respect intentions. They respect the undeniable proof of relentless, daily execution."',
+                sub: '— Command Respect Through Mastery'
+            },
+            {
+                text: '"Respect is never begged for; it is extracted from the world when your discipline outlasts everyone else\'s comfort."',
+                sub: '— Zero Excuses Protocol'
+            },
+            {
+                text: '"First earn your own respect in private—every rep, every calorie, every task—and the world will have no choice but to follow."',
+                sub: '— Built In Silence'
+            },
+            {
+                text: '"People judge you by what you finish, not what you start. Be the rare man whose word to himself is iron."',
+                sub: '— Relentless Consistency'
+            },
+            {
+                text: '"Weakness craves approval. Strength commands respect. Keep your head down and build an undeniable standard."',
+                sub: '— Standard Over Feelings'
+            },
+            {
+                text: '"Every skipped rep or broken promise erodes self-respect. Guard your daily standards with your life."',
+                sub: '— Daily Non-Negotiable'
+            }
+        ];
+
+        /* =========================================================================
+           2. STATE & LOCALSTORAGE INITIALIZATION
+           ========================================================================= */
+        const STORAGE_KEY = 'PROTOCOL_DISCIPLINE_STATE_V1';
+
+        const DEFAULT_DIET_TXT = [
+            "Oats & Milk Shake, 550, 350",
+            "Sattu Power Drink, 380, 500",
+            "Peanut Butter & Brown Bread, 420, 0",
+            "Paneer / Tofu (200g), 520, 0",
+            "Dal, Rice & Curd Meal, 680, 200",
+            "Soya Chunks Bowl, 340, 150",
+            "Banana & Handful Almonds, 280, 0",
+            "Electrolyte Water (1L), 0, 1000"
+        ].join('\n');
+
+        function getTodayDateString() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        function getDefaultFutureDate() {
+            const d = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+            return d.toISOString().slice(0, 16);
+        }
+
+        let state = {
+            lastActiveDate: getTodayDateString(),
+            quoteIndex: 0,
+            dailyTasks: [
+                { id: 'd1', text: 'Hit 3000 kcal & 4L water target', done: false },
+                { id: 'd2', text: 'Complete weighted calisthenics sets', done: false },
+                { id: 'd3', text: 'Deep work block — zero distractions', done: false }
+            ],
+            generalTasks: [
+                { id: 'g1', text: 'Upload or customize diet.txt items', done: false }
+            ],
+            dietRawText: DEFAULT_DIET_TXT,
+            dietPresets: [],
+            intakeLog: [],
+            exercise: {
+                startDate: getTodayDateString(),
+                manualSundayOffset: 0,
+                setsCompletedToday: {
+                    diamondPushups: [false, false, false],
+                    pullups: [false, false, false],
+                    squats: [false, false, false]
+                }
+            },
+            countdown: {
+                label: 'NEXT MAJOR MILESTONE',
+                targetIso: getDefaultFutureDate()
+            }
+        };
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    state = { ...state, ...parsed };
+                    if (parsed.exercise) {
+                        state.exercise = { ...state.exercise, ...parsed.exercise };
+                    }
+                    if (parsed.countdown) {
+                        state.countdown = { ...state.countdown, ...parsed.countdown };
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load state:', e);
+            }
+
+            // Check if a new calendar day started -> Auto-reset Daily Non-Negotiables & Today's Workout/Diet if desired
+            const today = getTodayDateString();
+            if (state.lastActiveDate !== today) {
+                state.dailyTasks = state.dailyTasks.map(t => ({ ...t, done: false }));
+                state.intakeLog = [];
+                state.exercise.setsCompletedToday = {
+                    diamondPushups: [false, false, false],
+                    pullups: [false, false, false],
+                    squats: [false, false, false]
+                };
+                state.lastActiveDate = today;
+            }
+
+            parseDietRawToPresets(state.dietRawText);
+            saveState();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.error('Failed to save state:', e);
+            }
+        }
+
+        /* =========================================================================
+           3. NAVIGATION & HEADER
+           ========================================================================= */
+        function switchTab(tabName) {
+            document.querySelectorAll('.module-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`module-${tabName}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('text-zinc-400');
+            });
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            activeBtn.classList.add('tab-active');
+            activeBtn.classList.remove('text-zinc-400');
+        }
+
+        function renderQuote() {
+            const q = RESPECT_QUOTES[state.quoteIndex % RESPECT_QUOTES.length];
+            document.getElementById('quote-text').textContent = q.text;
+            document.getElementById('quote-sub').textContent = q.sub;
+        }
+
+        function cycleQuote() {
+            state.quoteIndex = (state.quoteIndex + 1) % RESPECT_QUOTES.length;
+            saveState();
+            renderQuote();
+        }
+
+        /* =========================================================================
+           4. MODULE 1: TASKS (DAILY REPEATING + GENERAL)
+           ========================================================================= */
+        function renderTasks() {
+            // Daily repeating list
+            const dailyListEl = document.getElementById('daily-task-list');
+            dailyListEl.innerHTML = '';
+            let dailyDoneCount = 0;
+
+            if (state.dailyTasks.length === 0) {
+                dailyListEl.innerHTML = `<li class="text-xs font-mono text-zinc-600 py-4 text-center">No daily repeating tasks set.</li>`;
+            } else {
+                state.dailyTasks.forEach(task => {
+                    if (task.done) dailyDoneCount++;
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between gap-3 bg-zinc-950/90 border border-zinc-800/80 px-3.5 py-2.5 rounded-lg group';
+                    li.innerHTML = `
+                        <label class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                            <input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleDailyTask('${task.id}')">
+                            <span class="text-sm truncate ${task.done ? 'line-through text-zinc-500' : 'text-zinc-200'}">${escapeHtml(task.text)}</span>
+                        </label>
+                        <button onclick="removeDailyTask('${task.id}')" class="text-xs font-mono text-zinc-600 hover:text-red-400 px-1.5 py-0.5 transition">
+                            Remove
+                        </button>
+                    `;
+                    dailyListEl.appendChild(li);
+                });
+            }
+            document.getElementById('daily-progress-badge').textContent = `${dailyDoneCount}/${state.dailyTasks.length}`;
+
+            // General list
+            const genListEl = document.getElementById('general-task-list');
+            genListEl.innerHTML = '';
+            let genDoneCount = 0;
+
+            if (state.generalTasks.length === 0) {
+                genListEl.innerHTML = `<li class="text-xs font-mono text-zinc-600 py-4 text-center">No general tasks pending.</li>`;
+            } else {
+                state.generalTasks.forEach(task => {
+                    if (task.done) genDoneCount++;
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between gap-3 bg-zinc-950/90 border border-zinc-800/80 px-3.5 py-2.5 rounded-lg group';
+                    li.innerHTML = `
+                        <label class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                            <input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleGeneralTask('${task.id}')">
+                            <span class="text-sm truncate ${task.done ? 'line-through text-zinc-500' : 'text-zinc-200'}">${escapeHtml(task.text)}</span>
+                        </label>
+                        <button onclick="removeGeneralTask('${task.id}')" class="text-xs font-mono text-zinc-600 hover:text-red-400 px-1.5 py-0.5 transition">
+                            Remove
+                        </button>
+                    `;
+                    genListEl.appendChild(li);
+                });
+            }
+            document.getElementById('general-progress-badge').textContent = `${genDoneCount}/${state.generalTasks.length}`;
+        }
+
+        function addDailyTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('daily-task-input');
+            const text = input.value.trim();
+            if (!text) return;
+            state.dailyTasks.push({ id: 'd_' + Date.now(), text, done: false });
+            input.value = '';
+            saveState();
+            renderTasks();
+        }
+
+        function toggleDailyTask(id) {
+            state.dailyTasks = state.dailyTasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+            saveState();
+            renderTasks();
+        }
+
+        function removeDailyTask(id) {
+            state.dailyTasks = state.dailyTasks.filter(t => t.id !== id);
+            saveState();
+            renderTasks();
+        }
+
+        function resetDailyTasksManual() {
+            state.dailyTasks = state.dailyTasks.map(t => ({ ...t, done: false }));
+            saveState();
+            renderTasks();
+        }
+
+        function addGeneralTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('general-task-input');
+            const text = input.value.trim();
+            if (!text) return;
+            state.generalTasks.push({ id: 'g_' + Date.now(), text, done: false });
+            input.value = '';
+            saveState();
+            renderTasks();
+        }
+
+        function toggleGeneralTask(id) {
+            state.generalTasks = state.generalTasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+            saveState();
+            renderTasks();
+        }
+
+        function removeGeneralTask(id) {
+            state.generalTasks = state.generalTasks.filter(t => t.id !== id);
+            saveState();
+            renderTasks();
+        }
+
+        function clearCompletedGeneral() {
+            state.generalTasks = state.generalTasks.filter(t => !t.done);
+            saveState();
+            renderTasks();
+        }
+
+        /* =========================================================================
+           5. MODULE 2: CALORIE (3000) & WATER (4L) TRACKER + DIET.TXT PARSER
+           ========================================================================= */
+        const CALORIE_GOAL = 3000;
+        const WATER_GOAL_ML = 4000;
+
+        function parseDietRawToPresets(rawText) {
+            const lines = (rawText || '').split(/\r?\n/);
+            const parsed = [];
+
+            lines.forEach((line, idx) => {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.startsWith('#')) return;
+
+                // Supports: "Item, 350, 500" or "Item | 350 | 500" or "Item: 350 kcal, 250 ml"
+                const parts = trimmed.split(/[,|:]/).map(s => s.trim());
+                if (parts.length >= 2) {
+                    const name = parts[0];
+                    const cal = parseInt(parts[1].replace(/[^\d]/g, ''), 10) || 0;
+                    const water = parts[2] ? (parseInt(parts[2].replace(/[^\d]/g, ''), 10) || 0) : 0;
+                    if (name) {
+                        parsed.push({ id: 'preset_' + idx, name, cal, water });
+                    }
+                }
+            });
+
+            state.dietPresets = parsed;
+        }
+
+        function toggleDietPasteModal() {
+            const box = document.getElementById('diet-paste-box');
+            const textarea = document.getElementById('diet-raw-textarea');
+            box.classList.toggle('hidden');
+            if (!box.classList.contains('hidden')) {
+                textarea.value = state.dietRawText;
+            }
+        }
+
+        function saveRawDietText() {
+            const textarea = document.getElementById('diet-raw-textarea');
+            state.dietRawText = textarea.value;
+            parseDietRawToPresets(state.dietRawText);
+            saveState();
+            renderDietModule();
+            document.getElementById('diet-paste-box').classList.add('hidden');
+        }
+
+        function handleDietFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                state.dietRawText = content;
+                parseDietRawToPresets(content);
+                saveState();
+                renderDietModule();
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function addCustomDietItem(e) {
+            e.preventDefault();
+            const nameEl = document.getElementById('custom-food-name');
+            const calEl = document.getElementById('custom-food-cal');
+            const waterEl = document.getElementById('custom-food-water');
+
+            const name = nameEl.value.trim();
+            const cal = parseInt(calEl.value, 10) || 0;
+            const water = parseInt(waterEl.value, 10) || 0;
+            if (!name) return;
+
+            const newLine = `${name}, ${cal}, ${water}`;
+            state.dietRawText = state.dietRawText ? `${state.dietRawText}\n${newLine}` : newLine;
+            parseDietRawToPresets(state.dietRawText);
+
+            // Also immediately log it
+            quickAddIntake(name, cal, water);
+
+            nameEl.value = '';
+            calEl.value = '';
+            waterEl.value = '';
+        }
+
+        function quickAddIntake(name, cal, water) {
+            const now = new Date();
+            const timeStr = now.toTimeString().slice(0, 5);
+            state.intakeLog.unshift({
+                id: 'log_' + Date.now() + Math.random().toString(36).slice(2, 5),
+                name,
+                cal: Number(cal) || 0,
+                water: Number(water) || 0,
+                time: timeStr
+            });
+            saveState();
+            renderDietModule();
+        }
+
+        function removeIntakeLogItem(id) {
+            state.intakeLog = state.intakeLog.filter(item => item.id !== id);
+            saveState();
+            renderDietModule();
+        }
+
+        function resetDailyIntake() {
+            state.intakeLog = [];
+            saveState();
+            renderDietModule();
+        }
+
+        function renderDietModule() {
+            let totalCal = 0;
+            let totalWaterMl = 0;
+
+            state.intakeLog.forEach(item => {
+                totalCal += item.cal;
+                totalWaterMl += item.water;
+            });
+
+            const calPct = Math.min(100, Math.round((totalCal / CALORIE_GOAL) * 100));
+            const waterPct = Math.min(100, Math.round((totalWaterMl / WATER_GOAL_ML) * 100));
+
+            document.getElementById('cal-current').textContent = totalCal;
+            document.getElementById('cal-percent').textContent = `${calPct}%`;
+            document.getElementById('cal-bar').style.width = `${calPct}%`;
+
+            document.getElementById('water-current').textContent = (totalWaterMl / 1000).toFixed(2);
+            document.getElementById('water-percent').textContent = `${waterPct}%`;
+            document.getElementById('water-bar').style.width = `${waterPct}%`;
+
+            const remCal = Math.max(0, CALORIE_GOAL - totalCal);
+            const remWater = Math.max(0, WATER_GOAL_ML - totalWaterMl);
+            document.getElementById('remaining-macros-label').textContent = `LEFT: ${remCal} KCAL | ${remWater} ML`;
+
+            // Render diet.txt preset buttons
+            const presetsGrid = document.getElementById('diet-presets-grid');
+            presetsGrid.innerHTML = '';
+            state.dietPresets.forEach(p => {
+                const btn = document.createElement('button');
+                btn.onclick = () => quickAddIntake(p.name, p.cal, p.water);
+                btn.className = 'flex items-center justify-between bg-zinc-950 hover:bg-zinc-900 border border-zinc-800/90 hover:border-zinc-600 p-3 rounded-lg text-left transition group';
+                btn.innerHTML = `
+                    <div class="pr-2 min-w-0">
+                        <div class="text-xs font-medium text-zinc-100 truncate group-hover:text-white">${escapeHtml(p.name)}</div>
+                        <div class="font-mono text-[11px] text-zinc-500 mt-0.5">
+                            ${p.cal > 0 ? `+${p.cal} kcal` : ''} ${p.cal > 0 && p.water > 0 ? '•' : ''} ${p.water > 0 ? `+${p.water} ml` : ''}
+                        </div>
+                    </div>
+                    <span class="font-mono text-xs bg-zinc-900 group-hover:bg-zinc-100 group-hover:text-zinc-950 text-zinc-300 px-2 py-1 rounded transition shrink-0">+ Add</span>
+                `;
+                presetsGrid.appendChild(btn);
+            });
+
+            // Render intake log
+            const logList = document.getElementById('diet-log-list');
+            logList.innerHTML = '';
+            if (state.intakeLog.length === 0) {
+                logList.innerHTML = `<li class="text-xs font-mono text-zinc-600 py-8 text-center">No intake logged yet today. Select items from diet.txt to increment counters.</li>`;
+            } else {
+                state.intakeLog.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between bg-zinc-950 border border-zinc-800/80 px-3 py-2 rounded-lg text-xs';
+                    li.innerHTML = `
+                        <div class="min-w-0 pr-2">
+                            <span class="font-mono text-zinc-500 mr-1.5">[${item.time}]</span>
+                            <span class="text-zinc-200 font-medium">${escapeHtml(item.name)}</span>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="font-mono text-zinc-400">
+                                ${item.cal ? `${item.cal}kcal` : ''} ${item.water ? `${item.water}ml` : ''}
+                            </span>
+                            <button onclick="removeIntakeLogItem('${item.id}')" class="font-mono text-zinc-600 hover:text-red-400">×</button>
+                        </div>
+                    `;
+                    logList.appendChild(li);
+                });
+            }
+        }
+
+        /* =========================================================================
+           6. MODULE 3: PROGRESSIVE OVERLOAD EXERCISE TRACKER (+2 REPS EVERY SUNDAY)
+           ========================================================================= */
+        const EXERCISES_CONFIG = [
+            {
+                key: 'diamondPushups',
+                name: 'Weighted Diamond Pushups',
+                baseReps: 15,
+                sets: 3
+            },
+            {
+                key: 'pullups',
+                name: 'Weighted Pullups',
+                baseReps: 5,
+                sets: 3
+            },
+            {
+                key: 'squats',
+                name: 'Weighted Squats',
+                baseReps: 15,
+                sets: 3
+            }
+        ];
+
+        // Count how many Sundays have occurred strictly after startDate up to today
+        function countSundaysSince(startDateStr) {
+            const parts = startDateStr.split('-').map(Number);
+            if (parts.length !== 3) return 0;
+            const start = new Date(parts[0], parts[1] - 1, parts[2]);
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            if (today <= start) return 0;
+
+            let sundays = 0;
+            const cursor = new Date(start);
+            cursor.setDate(cursor.getDate() + 1); // Start counting from day after start
+
+            while (cursor <= today) {
+                if (cursor.getDay() === 0) { // 0 is Sunday
+                    sundays++;
+                }
+                cursor.setDate(cursor.getDate() + 1);
+            }
+            return sundays;
+        }
+
+        function adjustSundayOffset(delta) {
+            state.exercise.manualSundayOffset = (state.exercise.manualSundayOffset || 0) + delta;
+            saveState();
+            renderExerciseModule();
+        }
+
+        function toggleExerciseSet(exKey, setIdx) {
+            if (!state.exercise.setsCompletedToday[exKey]) {
+                state.exercise.setsCompletedToday[exKey] = [false, false, false];
+            }
+            state.exercise.setsCompletedToday[exKey][setIdx] = !state.exercise.setsCompletedToday[exKey][setIdx];
+            saveState();
+            renderExerciseModule();
+        }
+
+        function resetExerciseSetsToday() {
+            state.exercise.setsCompletedToday = {
+                diamondPushups: [false, false, false],
+                pullups: [false, false, false],
+                squats: [false, false, false]
+            };
+            saveState();
+            renderExerciseModule();
+        }
+
+        function resetStartDateToToday() {
+            state.exercise.startDate = getTodayDateString();
+            state.exercise.manualSundayOffset = 0;
+            saveState();
+            renderExerciseModule();
+        }
+
+        function renderExerciseModule() {
+            const autoSundays = countSundaysSince(state.exercise.startDate);
+            const totalSundays = Math.max(0, autoSundays + (state.exercise.manualSundayOffset || 0));
+            const repIncrement = totalSundays * 2;
+
+            document.getElementById('exercise-start-date-display').textContent = state.exercise.startDate;
+            document.getElementById('sundays-elapsed-count').textContent = totalSundays;
+            document.getElementById('total-rep-bonus').textContent = `+${repIncrement}`;
+            document.getElementById('sunday-offset-display').textContent = state.exercise.manualSundayOffset >= 0
+                ? `+${state.exercise.manualSundayOffset}`
+                : state.exercise.manualSundayOffset;
+
+            const container = document.getElementById('exercise-cards-container');
+            container.innerHTML = '';
+
+            EXERCISES_CONFIG.forEach(ex => {
+                const currentReps = ex.baseReps + repIncrement;
+                const setsArr = state.exercise.setsCompletedToday[ex.key] || [false, false, false];
+                const completedCount = setsArr.filter(Boolean).length;
+                const allDone = completedCount === 3;
+
+                const card = document.createElement('div');
+                card.className = `bg-zinc-950 border ${allDone ? 'border-zinc-400' : 'border-zinc-800'} rounded-xl p-5 flex flex-col justify-between transition`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-3">
+                            <span class="font-mono text-[11px] uppercase px-2 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+                                Base x = ${ex.baseReps}
+                            </span>
+                            <span class="font-mono text-xs ${allDone ? 'text-zinc-100 font-semibold' : 'text-zinc-500'}">
+                                ${completedCount}/3 Sets
+                            </span>
+                        </div>
+                        <h3 class="text-base font-semibold text-zinc-100 mb-1">${ex.name}</h3>
+                        <div class="my-4 py-3 px-4 bg-zinc-925 border border-zinc-800/80 rounded-lg text-center">
+                            <div class="font-mono text-2xl sm:text-3xl font-bold text-zinc-100">
+                                3 × ${currentReps} <span class="text-xs font-normal text-zinc-400">reps</span>
+                            </div>
+                            <div class="font-mono text-[11px] text-zinc-500 mt-1">
+                                Next Sunday Target: 3 × ${currentReps + 2}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 pt-2">
+                        ${[0, 1, 2].map(idx => `
+                            <button onclick="toggleExerciseSet('${ex.key}', ${idx})"
+                                class="py-2.5 rounded-lg font-mono text-xs border transition ${
+                                    setsArr[idx]
+                                        ? 'bg-zinc-100 text-zinc-950 border-zinc-100 font-semibold'
+                                        : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border-zinc-800'
+                                }">
+                                SET ${idx + 1} ${setsArr[idx] ? '✓' : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        /* =========================================================================
+           7. MODULE 4: HOURS COUNTDOWN CALCULATOR
+           ========================================================================= */
+        function saveTargetCountdown(e) {
+            e.preventDefault();
+            const titleIn = document.getElementById('countdown-title-input').value.trim();
+            const dateIn = document.getElementById('countdown-date-input').value;
+            if (!dateIn) return;
+
+            state.countdown.label = titleIn || 'TARGET DEADLINE';
+            state.countdown.targetIso = dateIn;
+            saveState();
+            updateCountdownDisplay();
+        }
+
+        function updateCountdownDisplay() {
+            const labelEl = document.getElementById('countdown-label-display');
+            const totalHoursEl = document.getElementById('total-hours-remaining');
+            const daysEl = document.getElementById('cd-days');
+            const hoursEl = document.getElementById('cd-hours');
+            const minsEl = document.getElementById('cd-minutes');
+
+            labelEl.textContent = state.countdown.label || 'TARGET DEADLINE';
+
+            const targetTime = new Date(state.countdown.targetIso).getTime();
+            const now = Date.now();
+            const diffMs = targetTime - now;
+
+            if (isNaN(targetTime) || diffMs <= 0) {
+                totalHoursEl.textContent = '0.00';
+                daysEl.textContent = '0';
+                hoursEl.textContent = '0';
+                minsEl.textContent = '0';
+                return;
+            }
+
+            const exactHours = diffMs / (1000 * 60 * 60);
+            totalHoursEl.textContent = exactHours.toFixed(2);
+
+            const totalMinutes = Math.floor(diffMs / (1000 * 60));
+            const d = Math.floor(totalMinutes / (60 * 24));
+            const h = Math.floor((totalMinutes % (60 * 24)) / 60);
+            const m = totalMinutes % 60;
+
+            daysEl.textContent = d;
+            hoursEl.textContent = h;
+            minsEl.textContent = m;
+        }
+
+        /* =========================================================================
+           8. MODULE 5: PURE TIMER SECTION
+           ========================================================================= */
+        let pureTimerInterval = null;
+        let pureTimerRemainingSec = 1500;
+        let pureTimerRunning = false;
+
+        function formatSecondsHMS(totalSec) {
+            const hrs = Math.floor(totalSec / 3600);
+            const mins = Math.floor((totalSec % 3600) / 60);
+            const secs = totalSec % 60;
+            return [hrs, mins, secs].map(v => String(v).padStart(2, '0')).join(':');
+        }
+
+        function syncPureTimerFromInputs() {
+            const h = parseInt(document.getElementById('timer-in-hr').value, 10) || 0;
+            const m = parseInt(document.getElementById('timer-in-min').value, 10) || 0;
+            const s = parseInt(document.getElementById('timer-in-sec').value, 10) || 0;
+            pureTimerRemainingSec = Math.max(0, h * 3600 + m * 60 + s);
+            document.getElementById('pure-timer-display').textContent = formatSecondsHMS(pureTimerRemainingSec);
+        }
+
+        function startOrPausePureTimer() {
+            const btn = document.getElementById('timer-start-btn');
+            const inputsRow = document.getElementById('timer-inputs-row');
+
+            if (pureTimerRunning) {
+                clearInterval(pureTimerInterval);
+                pureTimerRunning = false;
+                btn.textContent = 'RESUME';
+                return;
+            }
+
+            if (inputsRow.style.opacity !== '0.3') {
+                syncPureTimerFromInputs();
+            }
+
+            if (pureTimerRemainingSec <= 0) return;
+
+            pureTimerRunning = true;
+            inputsRow.style.opacity = '0.3';
+            inputsRow.style.pointerEvents = 'none';
+            btn.textContent = 'PAUSE';
+
+            pureTimerInterval = setInterval(() => {
+                if (pureTimerRemainingSec > 0) {
+                    pureTimerRemainingSec--;
+                    document.getElementById('pure-timer-display').textContent = formatSecondsHMS(pureTimerRemainingSec);
+                } else {
+                    clearInterval(pureTimerInterval);
+                    pureTimerRunning = false;
+                    btn.textContent = 'START';
+                    inputsRow.style.opacity = '1';
+                    inputsRow.style.pointerEvents = 'auto';
+                    playTimerBeep();
+                }
+            }, 1000);
+        }
+
+        function resetPureTimer() {
+            clearInterval(pureTimerInterval);
+            pureTimerRunning = false;
+            const inputsRow = document.getElementById('timer-inputs-row');
+            inputsRow.style.opacity = '1';
+            inputsRow.style.pointerEvents = 'auto';
+            document.getElementById('timer-start-btn').textContent = 'START';
+            syncPureTimerFromInputs();
+        }
+
+        function playTimerBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                [0, 0.25, 0.5].forEach(offset => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, ctx.currentTime + offset);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime + offset);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.18);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + offset);
+                    osc.stop(ctx.currentTime + offset + 0.18);
+                });
+            } catch (e) {
+                console.log('Audio finish signal.');
+            }
+        }
+
+        /* =========================================================================
+           9. HELPERS & INITIALIZATION
+           ========================================================================= */
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        window.onload = function() {
+            loadState();
+
+            // Display header date
+            const now = new Date();
+            document.getElementById('current-date-display').textContent = now.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            // Initialize inputs & UI
+            renderQuote();
+            renderTasks();
+            renderDietModule();
+            renderExerciseModule();
+
+            document.getElementById('countdown-title-input').value = state.countdown.label;
+            document.getElementById('countdown-date-input').value = state.countdown.targetIso;
+            updateCountdownDisplay();
+            setInterval(updateCountdownDisplay, 30000);
+
+            syncPureTimerFromInputs();
+            ['timer-in-hr', 'timer-in-min', 'timer-in-sec'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    if (!pureTimerRunning) syncPureTimerFromInputs();
+                });
+            });
+        };
+    </script>
+</body>
+</html>
